@@ -1,0 +1,15 @@
+spring:
+  profiles: default
+  datasource:
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/translator
+    username: root
+    password: example
+  jpa:
+    show-sql: "true"
+    properties:
+      hibernate:
+        type: trace
+        use_sql_comments: true
+    hibernate:
+      ddl-auto: update
