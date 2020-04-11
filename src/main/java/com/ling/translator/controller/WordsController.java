@@ -1,6 +1,7 @@
 package com.ling.translator.controller;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,8 +35,14 @@ public class WordsController {
 	@GetMapping
 	public ResponseEntity<List<WordLight>> getQuizz(){
 		List<Words> allWords = wordRepo.findAll();
-		List<WordLight> response= quizLoad(allWords);
-		return ResponseEntity.ok().body(response);
+		List<WordLight> lightWords = new ArrayList<WordLight>();
+		for(Words word: allWords) {
+			List<Words> backupWords = wordRepo.findRandomWords(word.getId());
+			WordLight lightWord = quizLoad(word, backupWords);
+			lightWords.add(lightWord);
+		}
+		Collections.shuffle(lightWords);
+		return ResponseEntity.ok().body(lightWords);
 	}
 	
 	@GetMapping("/{id}")
@@ -79,63 +86,102 @@ public class WordsController {
 	@GetMapping("/nouns")
 	public ResponseEntity<List<WordLight>> getAllNouns(){
 		List<Words> allWords = wordRepo.findByIsNoun(true);
-		return ResponseEntity.ok().body(quizLoad(allWords));
+		List<WordLight> lightWords = new ArrayList<WordLight>();
+		for(Words word: allWords) {
+			List<Words> backupWords = wordRepo.findRandomNouns(word.getId());
+			WordLight lightWord = quizLoad(word, backupWords);
+			lightWords.add(lightWord);
+		}
+		Collections.shuffle(lightWords);
+		return ResponseEntity.ok().body(lightWords);
 	}
 	
 	@GetMapping("/verbs")
 	public ResponseEntity<List<WordLight>> getAllVerbs(){
 		List<Words> allWords = wordRepo.findByIsVerb(true);
-		return ResponseEntity.ok().body(quizLoad(allWords));
+		List<WordLight> lightWords = new ArrayList<WordLight>();
+		for(Words word: allWords) {
+			List<Words> backupWords = wordRepo.findRandomVerbs(word.getId());
+			WordLight lightWord = quizLoad(word, backupWords);
+			lightWords.add(lightWord);
+		}
+		Collections.shuffle(lightWords);
+		return ResponseEntity.ok().body(lightWords);
 	}
 	
 	@GetMapping("/pronouns")
 	public ResponseEntity<List<WordLight>> getAllPronouns(){
 		List<Words> allWords = wordRepo.findByIsPronoun(true);
-		return ResponseEntity.ok().body(quizLoad(allWords));
+		List<WordLight> lightWords = new ArrayList<WordLight>();
+		for(Words word: allWords) {
+			List<Words> backupWords = wordRepo.findRandomPronouns(word.getId());
+			WordLight lightWord = quizLoad(word, backupWords);
+			lightWords.add(lightWord);
+		}
+		Collections.shuffle(lightWords);
+		return ResponseEntity.ok().body(lightWords);
 	}
 	@GetMapping("/others")
 	public ResponseEntity<List<WordLight>> getAllOther(){
 		List<Words> allWords = wordRepo.findByIsOther(true);
-		return ResponseEntity.ok().body(quizLoad(allWords));
+		List<WordLight> lightWords = new ArrayList<WordLight>();
+		for(Words word: allWords) {
+			List<Words> backupWords = wordRepo.findRandomOthers(word.getId());
+			WordLight lightWord = quizLoad(word, backupWords);
+			lightWords.add(lightWord);
+		}
+		Collections.shuffle(lightWords);
+		return ResponseEntity.ok().body(lightWords);
 	}
 	
 	@GetMapping("/adverbs")
 	public ResponseEntity<List<WordLight>> getAllAdverbs(){
 		List<Words> allWords = wordRepo.findByIsAdverb(true);
-		return ResponseEntity.ok().body(quizLoad(allWords));
+		List<WordLight> lightWords = new ArrayList<WordLight>();
+		for(Words word: allWords) {
+			List<Words> backupWords = wordRepo.findRandomAdverbs(word.getId());
+			WordLight lightWord = quizLoad(word, backupWords);
+			lightWords.add(lightWord);
+		}
+		Collections.shuffle(lightWords);
+		return ResponseEntity.ok().body(lightWords);
 	}
 	
 	@GetMapping("/adjectives")
 	public ResponseEntity<List<WordLight>> getAllAdjectives(){
 		List<Words> allWords = wordRepo.findByIsAdjective(true);
-		return ResponseEntity.ok().body(quizLoad(allWords));
-	}
-	
-	public List<WordLight> quizLoad(List<Words> results){
-		List<WordLight> lightWords = new ArrayList();		
-		for(Words word: results) {
-			WordLight lightWord = new WordLight();
-			List<Words> allWords = wordRepo.findRandomWords(word.getId());
-			int size = allWords.size();
-			lightWord.setId(word.getId());
-			if(word.getId() % 2 == 0) {
-				lightWord.setWord(word.getRussian());
-				lightWord.setCorrectAnswer(word.getGerman());
-				String[] wrongs = {allWords.get(0).getGerman(),
-						allWords.get(1).getGerman(),
-						allWords.get(2).getGerman()};
-				lightWord.setWrongAnswers(wrongs);
-			}
-			else {
-				lightWord.setWord(word.getGerman());
-				lightWord.setCorrectAnswer(word.getRussian());
-				String[] wrongs = {allWords.get(0).getRussian(),
-						allWords.get(1).getRussian(),
-						allWords.get(2).getRussian()};
-				lightWord.setWrongAnswers(wrongs);
-			}
+		List<WordLight> lightWords = new ArrayList<WordLight>();
+		for(Words word: allWords) {
+			List<Words> backupWords = wordRepo.findRandomAdjectives(word.getId());
+			WordLight lightWord = quizLoad(word, backupWords);
 			lightWords.add(lightWord);
 		}
-		return lightWords;
+		Collections.shuffle(lightWords);
+		return ResponseEntity.ok().body(lightWords);
 	}
+	
+    public WordLight quizLoad(Words requiredWord, List < Words > backupWrong) {
+        WordLight lightWord = new WordLight();
+        lightWord.setId(requiredWord.getId());
+        if (requiredWord.getId() % 2 == 0) {
+            lightWord.setWord(requiredWord.getRussian());
+            lightWord.setCorrectAnswer(requiredWord.getGerman());
+            String[] wrongs = {
+                backupWrong.get(0).getGerman(),
+                backupWrong.get(1).getGerman(),
+                backupWrong.get(2).getGerman()
+            };
+            lightWord.setWrongAnswers(wrongs);
+        } else {
+            lightWord.setWord(requiredWord.getGerman());
+            lightWord.setCorrectAnswer(requiredWord.getRussian());
+            String[] wrongs = {
+                backupWrong.get(0).getRussian(),
+                backupWrong.get(1).getRussian(),
+                backupWrong.get(2).getRussian()
+            };
+            lightWord.setWrongAnswers(wrongs);
+        }
+        return lightWord;
+    }
 }
