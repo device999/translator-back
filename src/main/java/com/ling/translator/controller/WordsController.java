@@ -51,6 +51,8 @@ public class WordsController {
 		return ResponseEntity.ok().body(word);
 	}
 	
+
+	
 	@GetMapping("/all")
 	public ResponseEntity<List<Words>> getAllWords(){
 		List<Words> allWords = wordRepo.findAll();
@@ -158,6 +160,52 @@ public class WordsController {
 		}
 		Collections.shuffle(lightWords);
 		return ResponseEntity.ok().body(lightWords);
+	}
+	
+	@GetMapping("/mistakes")
+	public ResponseEntity<List<WordLight>> workOnMistakes(){
+		List<Statistics> allStats = statRepo.findAll();
+		List<WordLight> lightWords = new ArrayList<WordLight>();
+		for(Statistics currStat: allStats) {
+			float attempts = 0;
+			float threshold = 0;
+			if(currStat.getCorrectAnswer() + currStat.getWrongAnswer() > 0) {
+				attempts = currStat.getCorrectAnswer() + currStat.getWrongAnswer();
+				threshold = (currStat.getCorrectAnswer() * 100) / attempts;
+				if(threshold < 70) {
+					Words getWord = wordRepo.findById(currStat.getWordId());
+					WordLight lightWord = quizLoad(getWord, this.generateWrongAnswers(getWord));
+					lightWords.add(lightWord);
+				}
+			}else {
+				Words getWord = wordRepo.findById(currStat.getWordId());
+				WordLight lightWord = quizLoad(getWord, this.generateWrongAnswers(getWord));
+				lightWords.add(lightWord);
+			}
+		}
+		Collections.shuffle(lightWords);
+		return ResponseEntity.ok().body(lightWords);
+	}
+	
+	private List<Words> generateWrongAnswers(Words word){
+		if(word.isNoun()){
+			return wordRepo.findRandomNouns(word.getId());
+		}
+		else if(word.isVerb()) {
+			return wordRepo.findRandomVerbs(word.getId());
+		}
+		else if(word.isAdjective()) {
+			return wordRepo.findRandomAdjectives(word.getId());
+		}
+		else if(word.isAdverb()) {
+			return wordRepo.findRandomAdverbs(word.getId());
+		}
+		else if(word.isPronoun()) {
+			return wordRepo.findRandomPronouns(word.getId());
+		}
+		else {
+			return wordRepo.findRandomOthers(word.getId());
+		}
 	}
 	
     public WordLight quizLoad(Words requiredWord, List < Words > backupWrong) {

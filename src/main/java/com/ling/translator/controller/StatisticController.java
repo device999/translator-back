@@ -42,14 +42,25 @@ public class StatisticController {
 		List<StatisticLight> lightVersion = new ArrayList<StatisticLight>();
 		for(Statistics stat: stats) {
 			Words word = wordRepo.findById(stat.getWordId());
-			StatisticLight newLight = new StatisticLight();			
+			StatisticLight newLight = new StatisticLight();
+			newLight.setId(stat.getId());
 			newLight.setWord(word.getGerman());
 			newLight.setCorrects(stat.getCorrectAnswer());
 			newLight.setWrongs(stat.getWrongAnswer());
+			newLight.setWordType(this.mapWordType(word));
 			lightVersion.add(newLight);
 		}
     	return ResponseEntity.ok().body(lightVersion);
     }
+	
+	private String mapWordType(Words word){
+		if(word.isNoun()){return "NOUN";}
+		else if(word.isVerb()) {return "VERB";}
+		else if(word.isAdjective()) {return "ADJECTIVE";}
+		else if(word.isAdverb()) {return "ADVERB";}
+		else if(word.isPronoun()) {return "PRONOUN";}
+		else {return "OTHER";}
+	}
 	
 	
 	
