@@ -7,6 +7,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.ResponseEntity.BodyBuilder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -51,7 +53,14 @@ public class WordsController {
 		return ResponseEntity.ok().body(word);
 	}
 	
-
+	@DeleteMapping("/{id}")
+	public ResponseEntity<String> deleteParticularWord(@PathVariable(value = "id") int id){
+		Words word = wordRepo.findById(id);
+		Statistics stats = statRepo.findByWordId(id);
+		wordRepo.delete(word);
+		statRepo.delete(stats);
+		return ResponseEntity.status(HttpStatus.ACCEPTED).body("{status:Deleted}");
+	}
 	
 	@GetMapping("/all")
 	public ResponseEntity<List<Words>> getAllWords(){

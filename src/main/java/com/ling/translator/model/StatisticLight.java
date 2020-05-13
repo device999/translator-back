@@ -4,7 +4,9 @@ public class StatisticLight {
 	
 	private int id;
 	
-	private String word;
+	private String german;
+	
+	private String russian;
 	  
 	private int corrects;
 	  
@@ -20,12 +22,20 @@ public class StatisticLight {
 		this.id = id;
 	}
 
-	public String getWord() {
-		return word;
+	public String getGerman() {
+		return german;
 	}
 
-	public void setWord(String word) {
-		this.word = word;
+	public void setGerman(String german) {
+		this.german = german;
+	}
+
+	public String getRussian() {
+		return russian;
+	}
+
+	public void setRussian(String russian) {
+		this.russian = russian;
 	}
 
 	public int getCorrects() {

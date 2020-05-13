@@ -44,7 +44,8 @@ public class StatisticController {
 			Words word = wordRepo.findById(stat.getWordId());
 			StatisticLight newLight = new StatisticLight();
 			newLight.setId(stat.getId());
-			newLight.setWord(word.getGerman());
+			newLight.setGerman(word.getGerman());
+			newLight.setRussian(word.getRussian());
 			newLight.setCorrects(stat.getCorrectAnswer());
 			newLight.setWrongs(stat.getWrongAnswer());
 			newLight.setWordType(this.mapWordType(word));
