@@ -18,6 +18,7 @@ CREATE TABLE `statistics` (
   `word_id` int NOT NULL,
   `wrong_answer` int NOT NULL,
   PRIMARY KEY (`id`)
+  FOREIGN KEY (`word_id`) Mapping ( `words` )
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 INSERT INTO `statistics` (`id`, `correct_answer`, `user_id`, `word_id`, `wrong_answer`) VALUES
