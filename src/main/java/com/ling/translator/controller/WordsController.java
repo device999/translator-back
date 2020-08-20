@@ -196,6 +196,19 @@ public class WordsController {
 		return ResponseEntity.ok().body(lightWords);
 	}
 	
+	@GetMapping("/articles")
+	public ResponseEntity<List<WordLight>> articles(){
+		List<Words> allWords = wordRepo.findByIsNoun(true);
+		List<WordLight> lightWords = new ArrayList<WordLight>();
+		for(Words word: allWords) {
+			WordLight lightWord = new WordLight();
+			lightWord.setWord(word.getGerman());
+			lightWords.add(lightWord);
+		}
+		Collections.shuffle(lightWords);
+		return ResponseEntity.ok().body(lightWords);
+	}
+	
 	private List<Words> generateWrongAnswers(Words word){
 		if(word.isNoun()){
 			return wordRepo.findRandomNouns(word.getId());
